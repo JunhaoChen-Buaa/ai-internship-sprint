@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 const workflowSteps = [
   {
@@ -74,15 +74,37 @@ export default function Home() {
   const [request, setRequest] = useState(
     "Create a competitive analysis comparing Linear and Asana for product development teams.",
   );
-  const [hasRun, setHasRun] = useState(false);
+  const [reply, setReply] = useState(
+    "输入竞品分析需求后，点击按钮会调用本地 Next.js API，再由服务端请求 MiniMax。",
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const fakeReply = useMemo(() => {
-    if (!hasRun) {
-      return "点击运行后，这里会展示 Day 0 的假 AI 回复。Day 1 会替换成真实 MiniMax API 调用。";
+  async function runAnalysis() {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: request }),
+      });
+      const data = (await response.json()) as { content?: string; error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error || "请求失败。");
+      }
+
+      setReply(data.content || "模型没有返回内容。");
+    } catch (caughtError) {
+      setError(caughtError instanceof Error ? caughtError.message : "未知错误。");
+    } finally {
+      setIsLoading(false);
     }
-
-    return "已生成竞品分析工作流预览：Scope -> Collection -> Analysis -> Writing -> QA。当前结果来自你已有的 deep-competitive-analyst 项目样例，后续会接入真实 API 与 LangGraph 后端。";
-  }, [hasRun]);
+  }
 
   return (
     <main className="min-h-screen bg-[#f6f7f4] text-[#171814]">
@@ -144,7 +166,7 @@ export default function Home() {
                 </p>
               </div>
               <span className="border border-[#c8d1bf] px-3 py-1 text-xs font-medium text-[#52623d]">
-                Mock
+                Live API
               </span>
             </div>
 
@@ -156,14 +178,19 @@ export default function Home() {
 
             <button
               type="button"
-              onClick={() => setHasRun(true)}
-              className="mt-4 w-full bg-[#1f2a1d] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#33422d]"
+              onClick={runAnalysis}
+              disabled={isLoading}
+              className="mt-4 w-full bg-[#1f2a1d] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#33422d] disabled:cursor-not-allowed disabled:bg-[#8e9588]"
             >
-              运行 Agent 工作流预览
+              {isLoading ? "正在调用 MiniMax..." : "运行真实 API 分析"}
             </button>
 
             <div className="mt-4 border border-[#d8ddd2] bg-[#f6f7f4] p-4 text-sm leading-6 text-[#3f453c]">
-              {fakeReply}
+              {error ? (
+                <span className="text-[#9f2d20]">{error}</span>
+              ) : (
+                <span className="whitespace-pre-wrap">{reply}</span>
+              )}
             </div>
           </div>
 
