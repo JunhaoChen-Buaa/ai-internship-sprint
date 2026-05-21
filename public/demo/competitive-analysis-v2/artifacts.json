@@ -1,0 +1,267 @@
+[
+  {
+    "id": "artifact_7f5ef139680c",
+    "agent_name": "scope-agent",
+    "artifact_type": "research_plan",
+    "summary": "Identified 2 companies and 0 open questions.",
+    "payload": {
+      "id": "plan_be455f9bfa6e",
+      "request": "Create a competitive analysis comparing Linear and Asana for product development teams.",
+      "companies": [
+        "Linear",
+        "Asana"
+      ],
+      "focus_areas": [
+        "company_fundamentals",
+        "product",
+        "pricing",
+        "market_presence",
+        "customer_sentiment",
+        "strategy"
+      ],
+      "audience": "product and business stakeholders",
+      "region": null,
+      "depth": "standard",
+      "open_questions": []
+    },
+    "created_at": "2026-05-20T12:28:00.585872Z"
+  },
+  {
+    "id": "artifact_faf88a56b129",
+    "agent_name": "collection-agent",
+    "artifact_type": "knowledge_base",
+    "summary": "Knowledge base has 2 companies, 4 sources, and 4 evidence records.",
+    "payload": {
+      "id": "kb_aeb7c4caf7dc",
+      "plan_id": "plan_be455f9bfa6e",
+      "companies": [
+        {
+          "company": "Linear",
+          "website": null,
+          "founded": null,
+          "headquarters": null,
+          "company_size": null,
+          "positioning": null,
+          "target_market": null,
+          "products": [],
+          "pricing_notes": [],
+          "notable_customers": [],
+          "recent_developments": [],
+          "evidence_ids": []
+        },
+        {
+          "company": "Asana",
+          "website": null,
+          "founded": null,
+          "headquarters": null,
+          "company_size": null,
+          "positioning": null,
+          "target_market": null,
+          "products": [],
+          "pricing_notes": [],
+          "notable_customers": [],
+          "recent_developments": [],
+          "evidence_ids": []
+        }
+      ],
+      "sources": [
+        {
+          "id": "src_1e3d35172c53",
+          "url": "https://linear.app/features",
+          "title": "Linear Features",
+          "publisher": null,
+          "source_type": "official",
+          "search_query": null,
+          "rank": null,
+          "credibility_score": 0.9,
+          "credibility_label": "high",
+          "retrieved_at": "2026-05-20T12:28:00.586292Z",
+          "reliability_note": "Official company material or owned domain."
+        },
+        {
+          "id": "src_a182ffebe3e5",
+          "url": "https://linear.app/pricing",
+          "title": "Linear Pricing",
+          "publisher": null,
+          "source_type": "official",
+          "search_query": null,
+          "rank": null,
+          "credibility_score": 0.9,
+          "credibility_label": "high",
+          "retrieved_at": "2026-05-20T12:28:00.586319Z",
+          "reliability_note": "Official company material or owned domain."
+        },
+        {
+          "id": "src_08d80d5a2d38",
+          "url": "https://asana.com/product",
+          "title": "Asana Product",
+          "publisher": null,
+          "source_type": "official",
+          "search_query": null,
+          "rank": null,
+          "credibility_score": 0.9,
+          "credibility_label": "high",
+          "retrieved_at": "2026-05-20T12:28:00.586335Z",
+          "reliability_note": "Official company material or owned domain."
+        },
+        {
+          "id": "src_0125482f2660",
+          "url": "https://asana.com/pricing",
+          "title": "Asana Pricing",
+          "publisher": null,
+          "source_type": "official",
+          "search_query": null,
+          "rank": null,
+          "credibility_score": 0.9,
+          "credibility_label": "high",
+          "retrieved_at": "2026-05-20T12:28:00.586349Z",
+          "reliability_note": "Official company material or owned domain."
+        }
+      ],
+      "evidence": [
+        {
+          "id": "ev_e5d173c077a5",
+          "source_id": "src_1e3d35172c53",
+          "company": "Linear",
+          "topic": "product",
+          "excerpt": "Linear describes its product as purpose-built for planning and building software, with issue tracking, projects, roadmaps, cycles, and integrations for product development teams.",
+          "source_url": "https://linear.app/features",
+          "relevance_note": "Seeded evidence supplied to the workflow.",
+          "captured_at": "2026-05-20T12:28:00.586302Z"
+        },
+        {
+          "id": "ev_b4d503c9b4c2",
+          "source_id": "src_a182ffebe3e5",
+          "company": "Linear",
+          "topic": "pricing",
+          "excerpt": "Linear publishes self-serve pricing tiers for teams, including paid plans with additional workspace, collaboration, and administrative capabilities.",
+          "source_url": "https://linear.app/pricing",
+          "relevance_note": "Seeded evidence supplied to the workflow.",
+          "captured_at": "2026-05-20T12:28:00.586324Z"
+        },
+        {
+          "id": "ev_9cf43b1bb503",
+          "source_id": "src_08d80d5a2d38",
+          "company": "Asana",
+          "topic": "product",
+          "excerpt": "Asana positions its work management platform around projects, tasks, goals, portfolios, workflow automation, reporting, and cross-functional team coordination.",
+          "source_url": "https://asana.com/product",
+          "relevance_note": "Seeded evidence supplied to the workflow.",
+          "captured_at": "2026-05-20T12:28:00.586340Z"
+        },
+        {
+          "id": "ev_a5ad8dbfe1d1",
+          "source_id": "src_0125482f2660",
+          "company": "Asana",
+          "topic": "pricing",
+          "excerpt": "Asana publishes pricing tiers for individuals, teams, and enterprises, with higher tiers adding advanced reporting, portfolios, goals, workload, and administrative controls.",
+          "source_url": "https://asana.com/pricing",
+          "relevance_note": "Seeded evidence supplied to the workflow.",
+          "captured_at": "2026-05-20T12:28:00.586352Z"
+        }
+      ],
+      "claims": []
+    },
+    "created_at": "2026-05-20T12:28:00.586387Z"
+  },
+  {
+    "id": "artifact_13935bddb356",
+    "agent_name": "analysis-agent",
+    "artifact_type": "claims",
+    "summary": "Generated 4 evidence-backed claims.",
+    "payload": {
+      "claims": [
+        {
+          "id": "claim_40d0f6ecd7d5",
+          "text": "Linear evidence for product: Linear describes its product as purpose-built for planning and building software, with issue tracking, projects, roadmaps, cycles, and integrations for product development teams.",
+          "company": "Linear",
+          "category": "product",
+          "evidence_ids": [
+            "ev_e5d173c077a5"
+          ],
+          "confidence": "medium",
+          "reasoning_summary": "Deterministic fallback generated only from one available EvidenceRecord.",
+          "source_agent": "analysis-agent:fallback"
+        },
+        {
+          "id": "claim_96b128d9321c",
+          "text": "Linear evidence for pricing: Linear publishes self-serve pricing tiers for teams, including paid plans with additional workspace, collaboration, and administrative capabilities.",
+          "company": "Linear",
+          "category": "pricing",
+          "evidence_ids": [
+            "ev_b4d503c9b4c2"
+          ],
+          "confidence": "medium",
+          "reasoning_summary": "Deterministic fallback generated only from one available EvidenceRecord.",
+          "source_agent": "analysis-agent:fallback"
+        },
+        {
+          "id": "claim_7d72d8a89852",
+          "text": "Asana evidence for product: Asana positions its work management platform around projects, tasks, goals, portfolios, workflow automation, reporting, and cross-functional team coordination.",
+          "company": "Asana",
+          "category": "product",
+          "evidence_ids": [
+            "ev_9cf43b1bb503"
+          ],
+          "confidence": "medium",
+          "reasoning_summary": "Deterministic fallback generated only from one available EvidenceRecord.",
+          "source_agent": "analysis-agent:fallback"
+        },
+        {
+          "id": "claim_b3acc8d3590f",
+          "text": "Asana evidence for pricing: Asana publishes pricing tiers for individuals, teams, and enterprises, with higher tiers adding advanced reporting, portfolios, goals, workload, and administrative controls.",
+          "company": "Asana",
+          "category": "pricing",
+          "evidence_ids": [
+            "ev_a5ad8dbfe1d1"
+          ],
+          "confidence": "medium",
+          "reasoning_summary": "Deterministic fallback generated only from one available EvidenceRecord.",
+          "source_agent": "analysis-agent:fallback"
+        }
+      ]
+    },
+    "created_at": "2026-05-20T12:28:00.586776Z"
+  },
+  {
+    "id": "artifact_dcedcf630484",
+    "agent_name": "writing-agent",
+    "artifact_type": "report_draft",
+    "summary": "Draft report created with 4 claims.",
+    "payload": {
+      "id": "report_444b04bb81cc",
+      "title": "Competitive Analysis V2: Linear vs Asana",
+      "markdown": "# Competitive Analysis V2: Linear vs Asana\n\n## Scope\nRequest: Create a competitive analysis comparing Linear and Asana for product development teams.\n\nCompanies: Linear, Asana\n\n## Evidence-Backed Findings\n### Product\n- Linear evidence for product: Linear describes its product as purpose-built for planning and building software, with issue tracking, projects, roadmaps, cycles, and integrations for product development teams. (confidence: medium; evidence: ev_e5d173c077a5)\n- Asana evidence for product: Asana positions its work management platform around projects, tasks, goals, portfolios, workflow automation, reporting, and cross-functional team coordination. (confidence: medium; evidence: ev_9cf43b1bb503)\n\n### Pricing\n- Linear evidence for pricing: Linear publishes self-serve pricing tiers for teams, including paid plans with additional workspace, collaboration, and administrative capabilities. (confidence: medium; evidence: ev_b4d503c9b4c2)\n- Asana evidence for pricing: Asana publishes pricing tiers for individuals, teams, and enterprises, with higher tiers adding advanced reporting, portfolios, goals, workload, and administrative controls. (confidence: medium; evidence: ev_a5ad8dbfe1d1)\n\n## Company Fact Sheets\n| Company | Evidence Count | Product Signals | Pricing Signals |\n|---|---:|---|---|\n| Linear | 2 | Linear describes its product as purpose-built for planning and building software, with issue tracking, projects, roadmaps, cycles, and integrations for product development teams. | Linear publishes self-serve pricing tiers for teams, including paid plans with additional workspace, collaboration, and administrative capabilities. |\n| Asana | 2 | Asana positions its work management platform around projects, tasks, goals, portfolios, workflow automation, reporting, and cross-functional team coordination. | Asana publishes pricing tiers for individuals, teams, and enterprises, with higher tiers adding advanced reporting, portfolios, goals, workload, and administrative controls. |\n\n## Evidence Table\n| Evidence ID | Company | Topic | Excerpt | Source |\n|---|---|---|---|---|\n| ev_e5d173c077a5 | Linear | product | Linear describes its product as purpose-built for planning and building software, with issue tracking, projects, roadmap... | https://linear.app/features |\n| ev_b4d503c9b4c2 | Linear | pricing | Linear publishes self-serve pricing tiers for teams, including paid plans with additional workspace, collaboration, and ... | https://linear.app/pricing |\n| ev_9cf43b1bb503 | Asana | product | Asana positions its work management platform around projects, tasks, goals, portfolios, workflow automation, reporting, ... | https://asana.com/product |\n| ev_a5ad8dbfe1d1 | Asana | pricing | Asana publishes pricing tiers for individuals, teams, and enterprises, with higher tiers adding advanced reporting, port... | https://asana.com/pricing |\n\n## Source Inventory\n- src_1e3d35172c53: Linear Features (official, credibility=high/0.90) - https://linear.app/features\n- src_a182ffebe3e5: Linear Pricing (official, credibility=high/0.90) - https://linear.app/pricing\n- src_08d80d5a2d38: Asana Product (official, credibility=high/0.90) - https://asana.com/product\n- src_0125482f2660: Asana Pricing (official, credibility=high/0.90) - https://asana.com/pricing\n\n## Source Quality\n| Source ID | Type | Label | Score | Reliability Note |\n|---|---|---|---:|---|\n| src_1e3d35172c53 | official | high | 0.90 | Official company material or owned domain. |\n| src_a182ffebe3e5 | official | high | 0.90 | Official company material or owned domain. |\n| src_08d80d5a2d38 | official | high | 0.90 | Official company material or owned domain. |\n| src_0125482f2660 | official | high | 0.90 | Official company material or owned domain. |\n\n## Limitations\nThis system does not invent competitive conclusions without SourceRecord and EvidenceRecord inputs.\n\n## Next Required Step\nIf evidence is missing, run the Collection Agent with real search credentials or provide seed_records, then regenerate claims and the report.\n",
+      "claim_ids": [
+        "claim_40d0f6ecd7d5",
+        "claim_96b128d9321c",
+        "claim_7d72d8a89852",
+        "claim_b3acc8d3590f"
+      ],
+      "evidence_ids": [
+        "ev_9cf43b1bb503",
+        "ev_a5ad8dbfe1d1",
+        "ev_b4d503c9b4c2",
+        "ev_e5d173c077a5"
+      ],
+      "generated_at": "2026-05-20T12:28:00.587082Z",
+      "revision": 0
+    },
+    "created_at": "2026-05-20T12:28:00.587097Z"
+  },
+  {
+    "id": "artifact_e462f45a9232",
+    "agent_name": "qa-agent",
+    "artifact_type": "quality_review",
+    "summary": "QA passed with 0 findings.",
+    "payload": {
+      "id": "review_a391c5e98a21",
+      "passed": true,
+      "citation_coverage": 1.0,
+      "balance_score": 1.0,
+      "findings": [],
+      "reviewed_at": "2026-05-20T12:28:00.587348Z"
+    },
+    "created_at": "2026-05-20T12:28:00.587361Z"
+  }
+]

@@ -2,73 +2,15 @@
 
 import { useState } from "react";
 
-const workflowSteps = [
-  {
-    name: "Scope Agent",
-    status: "done",
-    description: "解析用户需求，识别竞品、目标受众、分析重点和开放问题。",
-  },
-  {
-    name: "Collection Agent",
-    status: "done",
-    description: "采集或载入公开资料，生成 SourceRecord 和 EvidenceRecord。",
-  },
-  {
-    name: "Analysis Agent",
-    status: "done",
-    description: "只基于证据生成 ClaimRecord，避免凭空生成商业结论。",
-  },
-  {
-    name: "Writing Agent",
-    status: "done",
-    description: "把结构化结论写成 Markdown 报告，并保留证据表。",
-  },
-  {
-    name: "QA Agent",
-    status: "done",
-    description: "检查 citation coverage、source quality、balance 和报告格式。",
-  },
-];
-
-const traceEvents = [
-  {
-    agent: "scope-agent",
-    decision: "提取 Linear 与 Asana，进入标准竞品分析流程。",
-    output: "ResearchPlan created",
-  },
-  {
-    agent: "collection-agent",
-    decision: "只使用 seed evidence 或真实搜索结果，不伪造来源。",
-    output: "4 sources, 4 evidence records",
-  },
-  {
-    agent: "analysis-agent",
-    decision: "每条 claim 必须绑定 evidence_ids。",
-    output: "4 evidence-backed claims",
-  },
-  {
-    agent: "qa-agent",
-    decision: "citation coverage 达到 1.00，通过质量检查。",
-    output: "QA passed",
-  },
-];
-
-const reportPreview = [
-  {
-    category: "Product",
-    items: [
-      "Linear 聚焦软件团队的 issue tracking、projects、roadmaps、cycles 和 integrations。",
-      "Asana 更强调跨职能项目管理、任务、目标、portfolio、workflow automation 和 reporting。",
-    ],
-  },
-  {
-    category: "Pricing",
-    items: [
-      "Linear 提供面向团队的自助定价层级，并在高级计划中扩展协作与管理能力。",
-      "Asana 提供个人、团队、企业多层级定价，高级层级加入 reporting、goals、workload 和管理控制。",
-    ],
-  },
-];
+import {
+  demoArtifactLinks,
+  demoEvidenceRows,
+  demoFindings,
+  demoMetrics,
+  demoSourceRows,
+  demoTraceEvents,
+  demoWorkflowSteps,
+} from "./data/competitive-demo";
 
 export default function Home() {
   const [request, setRequest] = useState(
@@ -79,12 +21,42 @@ export default function Home() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [streamingEnabled, setStreamingEnabled] = useState(false);
 
   async function runAnalysis() {
     setIsLoading(true);
     setError(null);
+    setReply("");
 
     try {
+      if (streamingEnabled) {
+        const response = await fetch("/api/chat/stream", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: request }),
+        });
+
+        if (!response.ok || !response.body) {
+          throw new Error(await response.text());
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          setReply((current) => current + decoder.decode(value, { stream: true }));
+        }
+
+        return;
+      }
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -136,12 +108,7 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {[
-                ["Sources", "4"],
-                ["Evidence", "4"],
-                ["Claims", "4"],
-                ["QA", "Passed"],
-              ].map(([label, value]) => (
+              {demoMetrics.map(([label, value]) => (
                 <div
                   key={label}
                   className="border border-[#d8ddd2] bg-[#fbfcf8] p-4"
@@ -166,7 +133,7 @@ export default function Home() {
                 </p>
               </div>
               <span className="border border-[#c8d1bf] px-3 py-1 text-xs font-medium text-[#52623d]">
-                Live API
+                {streamingEnabled ? "Streaming" : "Live API"}
               </span>
             </div>
 
@@ -175,6 +142,16 @@ export default function Home() {
               onChange={(event) => setRequest(event.target.value)}
               className="min-h-32 w-full resize-none border border-[#cfd6c8] bg-[#fbfcf8] p-3 text-sm leading-6 outline-none focus:border-[#667a47]"
             />
+
+            <label className="mt-4 flex items-center justify-between gap-4 border border-[#e2e6dd] bg-[#fbfcf8] p-3 text-sm text-[#3f453c]">
+              <span>流式输出</span>
+              <input
+                type="checkbox"
+                checked={streamingEnabled}
+                onChange={(event) => setStreamingEnabled(event.target.checked)}
+                className="h-4 w-4 accent-[#667a47]"
+              />
+            </label>
 
             <button
               type="button"
@@ -219,13 +196,13 @@ export default function Home() {
           <div className="border border-[#d8ddd2] bg-white p-5">
             <h2 className="text-lg font-semibold">Agent DAG</h2>
             <div className="mt-4 space-y-3">
-              {workflowSteps.map((step, index) => (
+              {demoWorkflowSteps.map((step, index) => (
                 <div key={step.name} className="flex gap-3">
                   <div className="flex flex-col items-center">
                     <div className="flex h-8 w-8 items-center justify-center bg-[#667a47] text-sm font-semibold text-white">
                       {index + 1}
                     </div>
-                    {index < workflowSteps.length - 1 ? (
+                    {index < demoWorkflowSteps.length - 1 ? (
                       <div className="h-full w-px bg-[#cfd6c8]" />
                     ) : null}
                   </div>
@@ -248,15 +225,18 @@ export default function Home() {
           <div className="border border-[#d8ddd2] bg-white p-5">
             <h2 className="text-lg font-semibold">Trace Preview</h2>
             <div className="mt-4 overflow-hidden border border-[#e2e6dd]">
-              {traceEvents.map((event) => (
+              {demoTraceEvents.map((event) => (
                 <div
-                  key={event.agent}
+                  key={event.id}
                   className="grid gap-2 border-b border-[#e2e6dd] p-3 text-sm last:border-b-0 md:grid-cols-[0.35fr_1fr]"
                 >
                   <span className="font-medium text-[#394235]">{event.agent}</span>
                   <div>
                     <p className="text-[#171814]">{event.decision}</p>
                     <p className="mt-1 text-[#667a47]">{event.output}</p>
+                    {event.warnings.length > 0 ? (
+                      <p className="mt-1 text-[#9f6b20]">{event.warnings.join(" ")}</p>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -280,17 +260,81 @@ export default function Home() {
           </div>
 
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            {reportPreview.map((section) => (
+            {demoFindings.map((section) => (
               <div key={section.category} className="border border-[#e2e6dd] bg-[#fbfcf8] p-4">
                 <h3 className="font-semibold">{section.category}</h3>
                 <ul className="mt-3 space-y-3 text-sm leading-6 text-[#4d5449]">
                   {section.items.map((item) => (
-                    <li key={item} className="border-l-2 border-[#9aaa81] pl-3">
-                      {item}
+                    <li key={item.evidence} className="border-l-2 border-[#9aaa81] pl-3">
+                      <span className="font-medium text-[#171814]">{item.company}: </span>
+                      {item.text}
+                      <span className="mt-1 block text-xs text-[#667a47]">
+                        evidence: {item.evidence}
+                      </span>
                     </li>
                   ))}
                 </ul>
               </div>
+            ))}
+          </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+            <div className="border border-[#e2e6dd] bg-[#fbfcf8] p-4">
+              <h3 className="font-semibold">Evidence Table</h3>
+              <div className="mt-3 space-y-3 text-sm">
+                {demoEvidenceRows.map((row) => (
+                  <div key={row.id} className="border-l-2 border-[#9aaa81] pl-3">
+                    <div className="font-medium text-[#171814]">
+                      {row.id} · {row.company} · {row.topic}
+                    </div>
+                    <p className="mt-1 leading-6 text-[#4d5449]">{row.excerpt}</p>
+                    <a
+                      href={row.source}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-1 block text-xs text-[#52623d] underline underline-offset-4"
+                    >
+                      {row.source}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border border-[#e2e6dd] bg-[#fbfcf8] p-4">
+              <h3 className="font-semibold">Source Quality</h3>
+              <div className="mt-3 space-y-3 text-sm">
+                {demoSourceRows.map((row) => (
+                  <div key={row.id} className="border-l-2 border-[#9aaa81] pl-3">
+                    <div className="font-medium text-[#171814]">{row.title}</div>
+                    <p className="mt-1 text-[#4d5449]">
+                      {row.type} · credibility {row.credibility}
+                    </p>
+                    <a
+                      href={row.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-1 block text-xs text-[#52623d] underline underline-offset-4"
+                    >
+                      {row.url}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-wrap gap-3">
+            {demoArtifactLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="border border-[#c8d1bf] px-3 py-2 text-sm font-medium text-[#52623d] transition hover:bg-[#f0f3ea]"
+              >
+                {link.label}
+              </a>
             ))}
           </div>
         </div>

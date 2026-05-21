@@ -1,0 +1,71 @@
+[
+  {
+    "id": "trace_d1c8c04675d9",
+    "agent_name": "scope-agent",
+    "stage": "scope",
+    "input_summary": "Create a competitive analysis comparing Linear and Asana for product development teams.",
+    "output_summary": "Research plan created for companies: ['Linear', 'Asana']",
+    "decision": "Proceed with transparent placeholder workflow; ask clarifying questions if companies are missing.",
+    "artifact_ids": [
+      "artifact_7f5ef139680c"
+    ],
+    "warnings": [],
+    "created_at": "2026-05-20T12:28:00.585922Z"
+  },
+  {
+    "id": "trace_82af2b9195a2",
+    "agent_name": "collection-agent",
+    "stage": "collection",
+    "input_summary": "Plan plan_be455f9bfa6e with companies: ['Linear', 'Asana']",
+    "output_summary": "Knowledge base initialized with 4 sources and 4 evidence records.",
+    "decision": "Use live or seeded evidence only; do not invent sources.",
+    "artifact_ids": [
+      "artifact_faf88a56b129"
+    ],
+    "warnings": [
+      "Loaded 4 seeded source/evidence records."
+    ],
+    "created_at": "2026-05-20T12:28:00.586415Z"
+  },
+  {
+    "id": "trace_23044b25404b",
+    "agent_name": "analysis-agent",
+    "stage": "analysis",
+    "input_summary": "Knowledge base kb_aeb7c4caf7dc with 4 evidence records.",
+    "output_summary": "4 claims available after analysis.",
+    "decision": "Claims require evidence_ids; optional LLM analysis falls back to deterministic evidence summaries.",
+    "artifact_ids": [
+      "artifact_13935bddb356"
+    ],
+    "warnings": [
+      "LLM analysis was requested, but OPENAI_API_KEY is missing or placeholder."
+    ],
+    "created_at": "2026-05-20T12:28:00.586792Z"
+  },
+  {
+    "id": "trace_7343e30e3782",
+    "agent_name": "writing-agent",
+    "stage": "writing",
+    "input_summary": "Writing from 4 claims.",
+    "output_summary": "Report draft report_444b04bb81cc created.",
+    "decision": "Unsupported claims are excluded from the report.",
+    "artifact_ids": [
+      "artifact_dcedcf630484"
+    ],
+    "warnings": [],
+    "created_at": "2026-05-20T12:28:00.587109Z"
+  },
+  {
+    "id": "trace_ab0149ccd424",
+    "agent_name": "qa-agent",
+    "stage": "qa",
+    "input_summary": "Reviewing report report_444b04bb81cc.",
+    "output_summary": "QA passed=True, citation_coverage=1.00.",
+    "decision": "Route to revision if high-severity findings exist and revision budget remains.",
+    "artifact_ids": [
+      "artifact_e462f45a9232"
+    ],
+    "warnings": [],
+    "created_at": "2026-05-20T12:28:00.587376Z"
+  }
+]

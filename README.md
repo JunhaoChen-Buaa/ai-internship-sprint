@@ -20,11 +20,22 @@ Scope Agent -> Collection Agent -> Analysis Agent -> Writing Agent -> QA Agent
 前端输入 -> /api/chat -> MiniMax OpenAI-compatible API -> 前端展示
 ```
 
+同时，项目已接入旧项目 `D:\deep-competitive-analyst` 的真实 demo 输出：
+
+```text
+public/demo/competitive-analysis-v2/report.md
+public/demo/competitive-analysis-v2/trace.json
+public/demo/competitive-analysis-v2/artifacts.json
+```
+
+页面中的 Trace、Evidence Table、Source Quality、Report Preview 来自这组真实输出，不再只是手写展示文案。
+
 ## 当前进度
 
 - Day 0 上午：Node.js、npm、pnpm、VS Code、GitHub 仓库、Next.js 项目已准备。
 - Day 0 下午：已将默认 Next.js 页面替换为 AI Agent 应用壳子。
 - Day 0 下午：已新增 `/api/chat`，通过服务端调用 MiniMax API。
+- Day 0 下午：已接入旧项目真实输出文件，展示 evidence-backed report 和 trace。
 - 当前运行方式：本地 Next.js。
 - 下一步：填入真实 MiniMax API Key，验证本地真实调用，部署 Vercel。
 
@@ -99,6 +110,7 @@ https://github.com/JunhaoChen-Buaa/ai-internship-sprint.git
 - [x] 首页已替换为 AI 应用壳子。
 - [x] `.env.example` 已创建。
 - [x] `/api/chat` 已接入 MiniMax OpenAI-compatible API。
+- [x] 旧项目真实输出已整理到 `public/demo/competitive-analysis-v2/`。
 - [ ] `.env.local` 填入真实 MiniMax API Key。
 - [x] Git 初始化并 push 到 GitHub。
 - [ ] 本地真实 API 调用验证通过。
