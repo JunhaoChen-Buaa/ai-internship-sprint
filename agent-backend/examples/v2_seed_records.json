@@ -1,0 +1,34 @@
+[
+  {
+    "company": "Linear",
+    "topic": "product",
+    "url": "https://linear.app/features",
+    "title": "Linear Features",
+    "source_type": "official",
+    "excerpt": "Linear describes its product as purpose-built for planning and building software, with issue tracking, projects, roadmaps, cycles, and integrations for product development teams."
+  },
+  {
+    "company": "Linear",
+    "topic": "pricing",
+    "url": "https://linear.app/pricing",
+    "title": "Linear Pricing",
+    "source_type": "official",
+    "excerpt": "Linear publishes self-serve pricing tiers for teams, including paid plans with additional workspace, collaboration, and administrative capabilities."
+  },
+  {
+    "company": "Asana",
+    "topic": "product",
+    "url": "https://asana.com/product",
+    "title": "Asana Product",
+    "source_type": "official",
+    "excerpt": "Asana positions its work management platform around projects, tasks, goals, portfolios, workflow automation, reporting, and cross-functional team coordination."
+  },
+  {
+    "company": "Asana",
+    "topic": "pricing",
+    "url": "https://asana.com/pricing",
+    "title": "Asana Pricing",
+    "source_type": "official",
+    "excerpt": "Asana publishes pricing tiers for individuals, teams, and enterprises, with higher tiers adding advanced reporting, portfolios, goals, workload, and administrative controls."
+  }
+]

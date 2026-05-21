@@ -30,8 +30,19 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
+!.env.example
+!agent-backend/.env.example
+
+# Python / LangGraph backend runtime artifacts
+agent-backend/.env
+agent-backend/.dca_cache/
+agent-backend/run_outputs/
+agent-backend/src/.langgraph_api/
+agent-backend/src/__pycache__/
+agent-backend/src/*.egg-info/
+*.pyc
 
 # vercel
 .vercel
