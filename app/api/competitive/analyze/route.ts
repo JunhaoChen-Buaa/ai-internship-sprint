@@ -32,6 +32,33 @@ type TraceEvent = {
   modelCall: number;
 };
 
+type PythonTraceEvent = {
+  agent_name?: string;
+  agent?: string;
+  stage?: string;
+  input_summary?: string;
+  input?: string;
+  output_summary?: string;
+  output?: string;
+  decision?: string;
+  warnings?: string[];
+  durationMs?: number;
+  modelCall?: number;
+};
+
+type PythonBackendResponse = {
+  mode?: string;
+  report?: string;
+  qa?: unknown;
+  trace?: PythonTraceEvent[];
+  artifacts?: unknown[];
+  sources?: unknown[];
+  evidence?: unknown[];
+  claims?: unknown[];
+  revision_count?: number;
+  error?: string;
+};
+
 const seedSources = [
   {
     id: "src_linear_features",
@@ -97,6 +124,83 @@ const seedEvidence = [
       "Asana publishes pricing tiers for individuals, teams, and enterprises, with higher tiers adding advanced reporting, portfolios, goals, workload, and administrative controls.",
   },
 ];
+
+function getAgentBackendUrl() {
+  const raw = process.env.AGENT_BACKEND_URL?.trim();
+  if (!raw || raw === "replace_me") {
+    return null;
+  }
+  return raw.replace(/\/+$/, "");
+}
+
+function stringifyForUi(value: unknown) {
+  if (typeof value === "string") {
+    return value;
+  }
+  if (!value) {
+    return "";
+  }
+  return JSON.stringify(value, null, 2);
+}
+
+function normalizePythonTrace(events: PythonTraceEvent[] = []): TraceEvent[] {
+  return events.map((event, index) => ({
+    agent: event.agent_name ?? event.agent ?? `python-agent-${index + 1}`,
+    stage: event.stage ?? "python",
+    input: event.input_summary ?? event.input ?? "",
+    output: event.output_summary ?? event.output ?? "",
+    decision: event.decision ?? "Python LangGraph workflow step executed.",
+    warnings: event.warnings ?? [],
+    durationMs: event.durationMs ?? 0,
+    modelCall: event.modelCall ?? index + 1,
+  }));
+}
+
+async function callPythonBackend(backendUrl: string, message: string) {
+  const timeoutMs = Number(process.env.AGENT_BACKEND_TIMEOUT_MS ?? "120000");
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${backendUrl}/api/analyze`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        request: message,
+        use_default_seed_records: true,
+        live_collection: process.env.AGENT_BACKEND_LIVE_COLLECTION === "true",
+        llm_analysis: process.env.AGENT_BACKEND_LLM_ANALYSIS === "true",
+      }),
+      signal: controller.signal,
+    });
+
+    const data = (await response.json().catch(() => ({}))) as PythonBackendResponse;
+
+    if (!response.ok) {
+      throw new Error(data.error || `Python backend failed with HTTP ${response.status}`);
+    }
+
+    const trace = normalizePythonTrace(data.trace ?? []);
+
+    return NextResponse.json({
+      mode: data.mode ?? "python-langgraph-v2",
+      pythonBackend: true,
+      modelCalls: trace.length,
+      report: data.report || "Python backend returned no report.",
+      qa: stringifyForUi(data.qa),
+      trace,
+      sources: data.sources ?? [],
+      evidence: data.evidence ?? [],
+      artifacts: data.artifacts ?? [],
+      claims: data.claims ?? [],
+      revisionCount: data.revision_count ?? 0,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
 
 async function callModel(params: {
   system: string;
@@ -193,6 +297,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please enter an analysis request." }, { status: 400 });
   }
 
+  const backendUrl = getAgentBackendUrl();
+  let backendWarning: string | undefined;
+
+  if (backendUrl) {
+    try {
+      return await callPythonBackend(backendUrl, message);
+    } catch (error) {
+      backendWarning =
+        error instanceof Error ? error.message : "Unknown Python backend error.";
+
+      if (process.env.AGENT_BACKEND_FALLBACK === "false") {
+        return NextResponse.json(
+          {
+            error: backendWarning,
+            mode: "python-langgraph-v2",
+            pythonBackend: true,
+          },
+          { status: 502 },
+        );
+      }
+    }
+  }
+
   const trace: TraceEvent[] = [];
 
   try {
@@ -274,6 +401,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       mode: "live-multi-agent",
+      pythonBackend: false,
+      backendWarning,
       modelCalls: 5,
       report,
       qa,

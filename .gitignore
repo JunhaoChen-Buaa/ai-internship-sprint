@@ -37,8 +37,10 @@ yarn-error.log*
 
 # Python / LangGraph backend runtime artifacts
 agent-backend/.env
+agent-backend/.venv/
 agent-backend/.dca_cache/
 agent-backend/run_outputs/
+agent-backend/*.log
 agent-backend/src/.langgraph_api/
 agent-backend/src/__pycache__/
 agent-backend/src/*.egg-info/

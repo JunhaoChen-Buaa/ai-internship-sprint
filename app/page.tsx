@@ -28,6 +28,9 @@ type LiveTraceEvent = {
 };
 
 type MultiAgentResponse = {
+  mode?: string;
+  pythonBackend?: boolean;
+  backendWarning?: string;
   report?: string;
   qa?: string;
   trace?: LiveTraceEvent[];
@@ -45,6 +48,8 @@ export default function Home() {
   const [qaReview, setQaReview] = useState("");
   const [liveTrace, setLiveTrace] = useState<LiveTraceEvent[]>([]);
   const [modelCalls, setModelCalls] = useState(0);
+  const [runMode, setRunMode] = useState("Next.js MiniMax pipeline");
+  const [backendWarning, setBackendWarning] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,6 +60,7 @@ export default function Home() {
     setQaReview("");
     setLiveTrace([]);
     setModelCalls(0);
+    setBackendWarning("");
 
     try {
       const response = await fetch("/api/competitive/analyze", {
@@ -75,6 +81,8 @@ export default function Home() {
       setQaReview(data.qa || "");
       setLiveTrace(data.trace ?? []);
       setModelCalls(data.modelCalls ?? data.trace?.length ?? 0);
+      setRunMode(data.pythonBackend ? "Python LangGraph backend" : "Next.js MiniMax pipeline");
+      setBackendWarning(data.backendWarning ?? "");
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unknown error.");
     } finally {
@@ -171,6 +179,15 @@ export default function Home() {
                 </p>
               </div>
             ) : null}
+
+            <div className="mt-4 border border-[#d8ddd2] bg-[#fbfcf8] p-3 text-xs leading-5 text-[#60675d]">
+              Runtime: {runMode}
+              {backendWarning ? (
+                <span className="mt-1 block text-[#9f6b20]">
+                  Python backend fallback: {backendWarning}
+                </span>
+              ) : null}
+            </div>
           </div>
 
           <div className="border border-[#d8ddd2] bg-white p-5">
