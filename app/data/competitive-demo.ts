@@ -7,6 +7,18 @@ export const demoMetrics = [
 
 export const demoWorkflowSteps = [
   {
+    name: "Main Deep Agent",
+    status: "orchestrator",
+    description:
+      "Plans the competitive-analysis task, delegates focused research through the task tool, and synthesizes final deliverables.",
+  },
+  {
+    name: "Research Sub-Agent",
+    status: "sub-agent",
+    description:
+      "Runs isolated deep-dive research jobs with internet_search, tool-call limits, and context summarization middleware.",
+  },
+  {
     name: "Scope Agent",
     status: "done",
     description:
@@ -35,6 +47,127 @@ export const demoWorkflowSteps = [
     status: "done",
     description:
       "Checked citation coverage, source quality, balance, and report format. The seeded demo passed QA.",
+  },
+  {
+    name: "Revision Agent",
+    status: "conditional",
+    description:
+      "Runs only if QA fails. It revises the report from QA findings without inventing missing evidence.",
+  },
+] as const;
+
+export const demoAgentTeam = [
+  {
+    name: "Main Deep Agent",
+    layer: "Original deepagents layer",
+    responsibility:
+      "Acts as project manager and senior analyst: decomposes the task, maintains todos, delegates research, and writes final files.",
+    output: "Company profiles and competitive analysis report",
+  },
+  {
+    name: "research-agent",
+    layer: "Original deepagents layer",
+    responsibility:
+      "Receives focused research tasks through the task tool, calls internet_search, and returns cited factual findings.",
+    output: "Topic-level research result with source URLs",
+  },
+  {
+    name: "Scope Agent",
+    layer: "V2 typed DAG layer",
+    responsibility:
+      "Extracts companies, audience, focus areas, depth, and open questions from the user request.",
+    output: "ResearchPlan",
+  },
+  {
+    name: "Collection Agent",
+    layer: "V2 typed DAG layer",
+    responsibility:
+      "Loads seeded records or live search results and converts them into source and evidence records.",
+    output: "CompetitorKnowledgeBase",
+  },
+  {
+    name: "Analysis Agent",
+    layer: "V2 typed DAG layer",
+    responsibility:
+      "Generates claims only when evidence_ids are available, preserving the no-evidence-no-claim rule.",
+    output: "ClaimRecord[]",
+  },
+  {
+    name: "Writing Agent",
+    layer: "V2 typed DAG layer",
+    responsibility:
+      "Turns structured claims into a report with findings, fact sheets, evidence table, and source inventory.",
+    output: "ReportDraft",
+  },
+  {
+    name: "QA Agent",
+    layer: "V2 typed DAG layer",
+    responsibility:
+      "Checks citation coverage, source quality, evidence balance, and required report sections.",
+    output: "QualityReview",
+  },
+  {
+    name: "Revision Agent",
+    layer: "V2 typed DAG layer",
+    responsibility:
+      "Handles QA failure loops and records transparent revision notes instead of fabricating evidence.",
+    output: "Revised ReportDraft",
+  },
+] as const;
+
+export const demoSchemaFlow = [
+  "ResearchPlan",
+  "SourceRecord",
+  "EvidenceRecord",
+  "ClaimRecord",
+  "ReportDraft",
+  "QualityReview",
+  "AgentTraceEvent",
+] as const;
+
+export const demoCollaborationPrinciples = [
+  {
+    title: "DAG task flow",
+    text:
+      "The workflow is not a loose chat. Nodes run in order, and QA conditionally routes failed reports to Revision.",
+  },
+  {
+    title: "Evidence chain",
+    text:
+      "Every business claim is linked to evidence_ids, and evidence links back to source URLs.",
+  },
+  {
+    title: "Observable artifacts",
+    text:
+      "Each node emits trace events and artifacts, so the intermediate decisions are inspectable.",
+  },
+  {
+    title: "Cross-review loop",
+    text:
+      "QA can block weak reports. Revision can only annotate or revise from findings; it cannot invent missing sources.",
+  },
+] as const;
+
+export const demoOriginalRuntime = [
+  {
+    label: "Main Agent",
+    value: "create_deep_agent",
+    note: "Planning, delegation, synthesis, and final file writing.",
+  },
+  {
+    label: "Sub-Agent",
+    value: "research-agent",
+    note: "CompiledSubAgent invoked through the task tool for focused research.",
+  },
+  {
+    label: "Tool",
+    value: "internet_search",
+    note: "Perplexity-backed public information search with rate limiting.",
+  },
+  {
+    label: "Middleware",
+    value: "Summarization + ToolCallLimit",
+    note: "Controls long context growth and caps search-heavy runs.",
   },
 ] as const;
 

@@ -3,10 +3,14 @@
 import { useState } from "react";
 
 import {
+  demoAgentTeam,
   demoArtifactLinks,
+  demoCollaborationPrinciples,
   demoEvidenceRows,
   demoFindings,
   demoMetrics,
+  demoOriginalRuntime,
+  demoSchemaFlow,
   demoSourceRows,
   demoTraceEvents,
   demoWorkflowSteps,
@@ -101,9 +105,9 @@ export default function Home() {
                 AI 竞品分析 Agent 工作台
               </h1>
               <p className="max-w-3xl text-base leading-7 text-[#53594f]">
-                这个 Day 0 壳子复用了你已有的 deep-competitive-analyst 项目思路：
-                用 Scope、Collection、Analysis、Writing、QA 多 Agent 流程生成可追踪的竞品分析报告。
-                今天先完成前端壳子，Day 1 再接入真实大模型 API。
+                这个 Day 0 应用复用了你已有的 deep-competitive-analyst 项目思路：
+                用主 Agent、research-agent、Scope、Collection、Analysis、Writing、QA、Revision
+                组成可观测的竞品分析协作系统，并已接入 MiniMax 真实 API。
               </p>
             </div>
 
@@ -122,6 +126,42 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
+        <div className="border border-[#d8ddd2] bg-white p-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-medium uppercase tracking-[0.16em] text-[#667a47]">
+                Agent collaboration system
+              </p>
+              <h2 className="mt-2 text-2xl font-semibold">数字调研小组架构</h2>
+              <p className="mt-2 max-w-4xl text-sm leading-6 text-[#60675d]">
+                旧项目不是单 Agent 问答。它包含原始 deepagents 层的主 Agent + research-agent，
+                也包含 V2 的 Scope、Collection、Analysis、Writing、QA、Revision 专职节点。
+                下面这些卡片把子 Agent、职责和产物明确展开。
+              </p>
+            </div>
+            <div className="border border-[#c8d1bf] px-3 py-2 text-sm font-medium text-[#52623d]">
+              Main Agent + Sub-Agent + V2 DAG
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {demoAgentTeam.map((agent) => (
+              <div key={agent.name} className="border border-[#e2e6dd] bg-[#fbfcf8] p-4">
+                <div className="text-xs font-medium uppercase tracking-[0.12em] text-[#667a47]">
+                  {agent.layer}
+                </div>
+                <h3 className="mt-2 font-semibold text-[#171814]">{agent.name}</h3>
+                <p className="mt-2 text-sm leading-6 text-[#4d5449]">{agent.responsibility}</p>
+                <p className="mt-3 border-t border-[#e2e6dd] pt-3 text-xs text-[#60675d]">
+                  output: {agent.output}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="mx-auto grid max-w-7xl gap-6 px-6 py-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
         <div className="space-y-6">
           <div className="border border-[#d8ddd2] bg-white p-5">
@@ -129,7 +169,7 @@ export default function Home() {
               <div>
                 <h2 className="text-lg font-semibold">分析请求</h2>
                 <p className="mt-1 text-sm text-[#60675d]">
-                  Day 0 使用假回复验证交互。Day 1 替换为真实 LLM API。
+                  这里会调用真实 MiniMax API；下方展示旧项目真实运行产物。
                 </p>
               </div>
               <span className="border border-[#c8d1bf] px-3 py-1 text-xs font-medium text-[#52623d]">
@@ -177,8 +217,8 @@ export default function Home() {
               {[
                 "Node.js / npm / pnpm 已可用",
                 "Next.js 项目已创建并能本地运行",
-                "MiniMax API 已准备，等待 Day 1 接入",
-                "下一步：创建 .env.local、写 README、push GitHub、部署 Vercel",
+                "MiniMax API 已接入，支持普通响应和流式输出",
+                "旧项目真实 report / trace / artifacts 已接入页面展示",
               ].map((item) => (
                 <div
                   key={item}
@@ -241,6 +281,52 @@ export default function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-7xl gap-6 px-6 pb-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+        <div className="border border-[#d8ddd2] bg-white p-5">
+          <h2 className="text-lg font-semibold">Original DeepAgents Runtime</h2>
+          <p className="mt-2 text-sm leading-6 text-[#60675d]">
+            这一层来自原始项目代码：`agent.py` 创建主 Deep Agent，`sub_agents.py`
+            定义 research-agent，子 Agent 通过 task tool 被调度。
+          </p>
+          <div className="mt-4 space-y-3">
+            {demoOriginalRuntime.map((item) => (
+              <div key={item.label} className="border border-[#e2e6dd] bg-[#fbfcf8] p-3 text-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="font-medium text-[#171814]">{item.label}</span>
+                  <span className="text-[#667a47]">{item.value}</span>
+                </div>
+                <p className="mt-1 leading-6 text-[#60675d]">{item.note}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="border border-[#d8ddd2] bg-white p-5">
+          <h2 className="text-lg font-semibold">Schema 协作与审查闭环</h2>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {demoSchemaFlow.map((schema, index) => (
+              <div key={schema} className="flex items-center gap-2">
+                <span className="border border-[#c8d1bf] bg-[#fbfcf8] px-3 py-2 text-sm font-medium text-[#394235]">
+                  {schema}
+                </span>
+                {index < demoSchemaFlow.length - 1 ? (
+                  <span className="text-[#8a947f]">→</span>
+                ) : null}
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            {demoCollaborationPrinciples.map((item) => (
+              <div key={item.title} className="border border-[#e2e6dd] bg-[#fbfcf8] p-3">
+                <h3 className="text-sm font-semibold">{item.title}</h3>
+                <p className="mt-1 text-sm leading-6 text-[#60675d]">{item.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

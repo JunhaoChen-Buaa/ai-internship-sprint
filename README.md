@@ -30,6 +30,26 @@ public/demo/competitive-analysis-v2/artifacts.json
 
 页面中的 Trace、Evidence Table、Source Quality、Report Preview 来自这组真实输出，不再只是手写展示文案。
 
+## Agent 协作结构
+
+原项目包含两层 Agent 设计：
+
+```text
+Original deepagents layer:
+Main Deep Agent -> task tool -> research-agent -> internet_search -> Perplexity
+
+V2 typed DAG layer:
+Scope Agent -> Collection Agent -> Analysis Agent -> Writing Agent -> QA Agent
+QA Agent -> Revision Agent -> QA Agent，只有 QA 失败时进入修订闭环
+```
+
+当前前端页面已经把这两层都展示出来：
+
+- 主 Deep Agent 和 research-agent 的调度关系。
+- V2 中 6 个专职 Agent 节点。
+- ResearchPlan、SourceRecord、EvidenceRecord、ClaimRecord、ReportDraft、QualityReview、AgentTraceEvent 等 Schema 流转。
+- Evidence chain、QA feedback loop、trace 和 artifacts。
+
 ## 当前进度
 
 - Day 0 上午：Node.js、npm、pnpm、VS Code、GitHub 仓库、Next.js 项目已准备。
