@@ -7,6 +7,7 @@ This repository is now a complete Day 0 project instead of a frontend-only demo.
 - `app/`: Next.js 16 frontend and API routes.
 - `app/api/chat/`: simple MiniMax chat API route.
 - `app/api/competitive/analyze/`: integration route. If `AGENT_BACKEND_URL` is configured, it calls the Python LangGraph backend first. If not, it uses the Vercel-compatible TypeScript MiniMax pipeline.
+- `app/api/competitive/analyze/stream/`: streaming integration route. It emits newline-delimited JSON events so the UI can show Agent starts, streamed model output, finished trace records, the report, and QA review while the run is still happening.
 - `app/data/competitive-demo.ts`: replay data extracted from the previous competitive-analysis project.
 - `public/demo/competitive-analysis-v2/`: generated report, trace, and artifact JSON from the previous LangGraph workflow.
 - `agent-backend/`: the original Python backend project with Deep Agents, LangChain, LangGraph, schemas, CLI, examples, and running docs.

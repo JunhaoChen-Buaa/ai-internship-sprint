@@ -38,6 +38,48 @@ type MultiAgentResponse = {
   error?: string;
 };
 
+type StreamEvent =
+  | {
+      type: "meta";
+      mode?: string;
+      pythonBackend?: boolean;
+      backendWarning?: string;
+      note?: string;
+    }
+  | {
+      type: "agent_start";
+      agent: string;
+      stage: string;
+      input: string;
+      decision: string;
+      modelCall: number;
+    }
+  | {
+      type: "agent_delta";
+      agent: string;
+      stage: string;
+      modelCall: number;
+      content: string;
+    }
+  | {
+      type: "agent_done";
+      trace: LiveTraceEvent;
+    }
+  | {
+      type: "done";
+      mode?: string;
+      pythonBackend?: boolean;
+      backendWarning?: string;
+      report?: string;
+      qa?: string;
+      trace?: LiveTraceEvent[];
+      modelCalls?: number;
+    }
+  | {
+      type: "error";
+      error: string;
+    };
+
 export default function Home() {
   const [request, setRequest] = useState(
     "Create a competitive analysis comparing Linear and Asana for product development teams.",
@@ -50,8 +92,88 @@ export default function Home() {
   const [modelCalls, setModelCalls] = useState(0);
   const [runMode, setRunMode] = useState("Next.js MiniMax pipeline");
   const [backendWarning, setBackendWarning] = useState("");
+  const [activeAgent, setActiveAgent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function upsertLiveTrace(event: LiveTraceEvent) {
+    setLiveTrace((current) => {
+      const existingIndex = current.findIndex(
+        (item) => item.agent === event.agent && item.modelCall === event.modelCall,
+      );
+
+      if (existingIndex === -1) {
+        return [...current, event];
+      }
+
+      return current.map((item, index) => (index === existingIndex ? event : item));
+    });
+  }
+
+  function appendAgentOutput(agent: string, modelCall: number, content: string) {
+    setLiveTrace((current) =>
+      current.map((item) =>
+        item.agent === agent && item.modelCall === modelCall
+          ? { ...item, output: item.output + content }
+          : item,
+      ),
+    );
+  }
+
+  function handleStreamEvent(event: StreamEvent) {
+    if (event.type === "meta") {
+      setRunMode(event.pythonBackend ? "Python LangGraph backend" : "Next.js MiniMax streaming pipeline");
+      setBackendWarning(event.backendWarning ?? "");
+      return;
+    }
+
+    if (event.type === "agent_start") {
+      setActiveAgent(event.agent);
+      setModelCalls((current) => Math.max(current, event.modelCall));
+      upsertLiveTrace({
+        agent: event.agent,
+        stage: event.stage,
+        input: event.input,
+        output: "",
+        decision: event.decision,
+        warnings: [],
+        durationMs: 0,
+        modelCall: event.modelCall,
+      });
+      return;
+    }
+
+    if (event.type === "agent_delta") {
+      appendAgentOutput(event.agent, event.modelCall, event.content);
+      if (event.stage === "writing") {
+        setReport((current) => current + event.content);
+      }
+      if (event.stage === "qa") {
+        setQaReview((current) => current + event.content);
+      }
+      return;
+    }
+
+    if (event.type === "agent_done") {
+      upsertLiveTrace(event.trace);
+      return;
+    }
+
+    if (event.type === "done") {
+      setActiveAgent("");
+      setReport(event.report || "The pipeline returned no report.");
+      setQaReview(event.qa || "");
+      setLiveTrace(event.trace ?? []);
+      setModelCalls(event.modelCalls ?? event.trace?.length ?? 0);
+      setRunMode(event.pythonBackend ? "Python LangGraph backend" : "Next.js MiniMax streaming pipeline");
+      setBackendWarning(event.backendWarning ?? "");
+      return;
+    }
+
+    if (event.type === "error") {
+      throw new Error(event.error);
+    }
+  }
 
   async function runAnalysis() {
     setIsLoading(true);
@@ -61,31 +183,48 @@ export default function Home() {
     setLiveTrace([]);
     setModelCalls(0);
     setBackendWarning("");
+    setActiveAgent("");
 
     try {
-      const response = await fetch("/api/competitive/analyze", {
+      const response = await fetch("/api/competitive/analyze/stream", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ message: request }),
       });
-      const data = (await response.json()) as MultiAgentResponse;
 
-      if (!response.ok) {
-        setLiveTrace(data.trace ?? []);
-        throw new Error(data.error || "Multi-agent pipeline failed.");
+      if (!response.ok || !response.body) {
+        const data = (await response.json().catch(() => ({}))) as MultiAgentResponse;
+        throw new Error(data.error || "Multi-agent stream failed.");
       }
 
-      setReport(data.report || "The pipeline returned no report.");
-      setQaReview(data.qa || "");
-      setLiveTrace(data.trace ?? []);
-      setModelCalls(data.modelCalls ?? data.trace?.length ?? 0);
-      setRunMode(data.pythonBackend ? "Python LangGraph backend" : "Next.js MiniMax pipeline");
-      setBackendWarning(data.backendWarning ?? "");
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed) {
+            continue;
+          }
+          handleStreamEvent(JSON.parse(trimmed) as StreamEvent);
+        }
+      }
     } catch (caughtError) {
       setError(caughtError instanceof Error ? caughtError.message : "Unknown error.");
     } finally {
+      setActiveAgent("");
       setIsLoading(false);
     }
   }
@@ -144,7 +283,7 @@ export default function Home() {
                 </p>
               </div>
               <span className="border border-[#c8d1bf] px-3 py-1 text-xs font-medium text-[#52623d]">
-                {modelCalls > 0 ? `${modelCalls} model calls` : "Ready"}
+                {activeAgent || (modelCalls > 0 ? `${modelCalls} model calls` : "Ready")}
               </span>
             </div>
 
@@ -167,7 +306,9 @@ export default function Home() {
               {error ? (
                 <span className="text-[#9f2d20]">{error}</span>
               ) : (
-                <span className="whitespace-pre-wrap">{report}</span>
+                <span className="whitespace-pre-wrap">
+                  {report || (isLoading ? "Waiting for Writing Agent output..." : "")}
+                </span>
               )}
             </div>
 
@@ -182,6 +323,9 @@ export default function Home() {
 
             <div className="mt-4 border border-[#d8ddd2] bg-[#fbfcf8] p-3 text-xs leading-5 text-[#60675d]">
               Runtime: {runMode}
+              {activeAgent ? (
+                <span className="mt-1 block text-[#52623d]">Active call: {activeAgent}</span>
+              ) : null}
               {backendWarning ? (
                 <span className="mt-1 block text-[#9f6b20]">
                   Python backend fallback: {backendWarning}
